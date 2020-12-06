@@ -38,7 +38,6 @@ export default function CreateEventDialog(props) {
             };
         }
         const res = await apiCall(requestBody, token);
-        console.log(res);
         if (res.status !== 200 && res.status !== 201) {
             setErrorMessage('Your request failed!');
         } else if (res.data.data) {

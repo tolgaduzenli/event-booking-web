@@ -11,13 +11,13 @@ import CustomCircularLoading from "../../components/loading/CustomCircularLoadin
 import ErrorTextDisplay from "../../components/error/ErrorTextDisplay";
 import DataNotFoundMessage from "../../components/message/DataNotFoundMessage";
 import ConfirmationDialogContent from "../../components/dialog/ConfirmationDialogContext";
+import EventDetails from "./EventDetails";
 
 export default function Events(props) {
     const { history } = props;
     const { isTokenValid, token } = useAuthContext();
 
     const [selectedEvent, setSelectedEvent] = useState();
-    const [eventId, setEventId] = useState();
     const [selectedAction, setSelectedAction] = useState();
 
     const [events, setEvents] = useState([]);
@@ -25,7 +25,7 @@ export default function Events(props) {
     const [error, setError] = useState();
 
     const [openCreateEventDialog, setOpenCreateEventDialog] = useState(false);
-    const [openEventBookingConfirmationDialog, setOpenEventBookingConfirmationDialog] = useState(false);
+    const [openEventDetailsDialog, setOpenEventDetailsDialog] = useState(false);
 
     const loadEvents = async () => {
         setLoading(true);
@@ -42,27 +42,9 @@ export default function Events(props) {
         setLoading(false);
     }
 
-    const bookEvent = async () => {
-        let requestBody = {
-            query: `mutation { bookEvent(eventId: "${eventId}") { _id} }`
-        };
-        const res = await apiCall(requestBody, token);
-        if (res.status !== 200 && res.status !== 201) {
-            setError('Event booking failed!');
-        } else if (res.data.data.events) {
-            await loadEvents();
-            setError();
-        }
-        closeDialogHandler();
-    }
-
-    async function handleBookEvent(eventId) {
-        if (isTokenValid) {
-            setOpenEventBookingConfirmationDialog(true);
-            setEventId(eventId);
-        } else {
-            history.push('auth')
-        }
+    async function handleViewDetails(event) {
+        setOpenEventDetailsDialog(true);
+        setSelectedEvent(event);
     }
 
     const handleEditEvent = (selectedItem) => {
@@ -76,8 +58,7 @@ export default function Events(props) {
             await loadEvents()
         }
         setOpenCreateEventDialog(false);
-        setOpenEventBookingConfirmationDialog(false);
-        setEventId();
+        setOpenEventDetailsDialog(false);
         setSelectedAction();
         setSelectedEvent();
     }
@@ -98,7 +79,7 @@ export default function Events(props) {
             <ErrorTextDisplay text={error}/>
             {events && events.length > 0 ?
                 <Grid container item xs={12}>
-                    <EventList events={events} handleEditEvent={handleEditEvent} handleBookEvent={handleBookEvent}/>
+                    <EventList events={events} handleEditEvent={handleEditEvent} handleViewDetails={handleViewDetails}/>
                 </Grid>
                 :
                 <DataNotFoundMessage/>}
@@ -114,15 +95,11 @@ export default function Events(props) {
                 />
             </CustomDialog>
             <CustomDialog
-                modalTitle="Event Booking Confirmation"
-                open={openEventBookingConfirmationDialog}
+                modalTitle="Event Details"
+                open={openEventDetailsDialog}
                 handleClose={closeDialogHandler}
             >
-                <ConfirmationDialogContent
-                    message="Do you want to book selected event?"
-                    handleLeftButtonClick={closeDialogHandler}
-                    handleRightButtonClick={bookEvent}
-                />
+                <EventDetails event={selectedEvent} closeDialog={closeDialogHandler}/>
             </CustomDialog>
         </Grid>
     )

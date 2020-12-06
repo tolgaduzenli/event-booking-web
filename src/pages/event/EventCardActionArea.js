@@ -4,6 +4,7 @@ import Grid from '@material-ui/core/Grid';
 import CardActionArea from '@material-ui/core/CardActionArea';
 import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
+import { dateTimeFormat } from "../../constants/StaticTexts";
 
 export default function EventCardActionArea(props) {
     const { event } = props;
@@ -34,7 +35,7 @@ export default function EventCardActionArea(props) {
                     <Grid container item xs={12} alignItems="center">
                         <Grid item xs={8}>
                             <Typography variant="body2" color="textSecondary"
-                                        component="p">{moment(date).format("dd, MMM Do YYYY, h:mm a")}</Typography>
+                                        component="p">{moment(date).format(dateTimeFormat)}</Typography>
                         </Grid>
                         <Grid container item xs={4} justify="flex-end">
                             <Typography variant="body2" color="textSecondary"

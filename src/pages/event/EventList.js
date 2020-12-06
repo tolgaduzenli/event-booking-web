@@ -19,13 +19,13 @@ const useStyles = makeStyles((theme) => ({
 }));
 export default function EventList(props) {
     const classes = useStyles();
-    const { events, handleEditEvent, handleBookEvent } = props;
+    const { events, handleEditEvent, handleViewDetails } = props;
     return (
         <div className={classes.root}>
             <GridList cellHeight={180} className={classes.gridList}>
                 {events.map((event) => (
                     <GridListTile key={event._id}>
-                        <EventCard event={event} handleEditEvent={handleEditEvent} handleBookEvent={handleBookEvent}/>
+                        <EventCard event={event} handleEditEvent={handleEditEvent} handleViewDetails={handleViewDetails}/>
                     </GridListTile>
                 ))}
             </GridList>
