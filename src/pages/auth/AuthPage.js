@@ -5,8 +5,8 @@ import Paper from '@material-ui/core/Paper';
 import Box from '@material-ui/core/Box';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-import SignIn from '../components/SignIn';
-import SignUp from '../components/SignUp';
+import SignIn from './SignIn';
+import SignUp from './SignUp';
 
 export default function AuthPage() {
     const [value, setValue] = React.useState(0);

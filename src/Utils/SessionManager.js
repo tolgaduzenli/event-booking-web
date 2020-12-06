@@ -21,6 +21,14 @@ export const setTokenToCookie = (auth) => {
     Cookies.set('tokenExpiration', expiration);
 }
 
+export const getTokenFromCookie = () => {
+    return Cookies.get('token');
+}
+
+export const getUserIdFromCookie = () => {
+    return Cookies.get('userId');
+}
+
 export const removeTokenFromCookie = () => {
     Cookies.remove('token');
     Cookies.remove('userId');

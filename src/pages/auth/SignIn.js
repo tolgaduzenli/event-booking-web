@@ -4,9 +4,9 @@ import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
-import { apiCall } from '../Utils/ApiCalls';
-import { setTokenToCookie } from '../Utils/SessionManager';
-import useAuthContext from '../context/AuthContext';
+import { apiCall } from '../../Utils/ApiCalls';
+import { setTokenToCookie } from '../../Utils/SessionManager';
+import { useAuthContext } from '../../context/AuthContext';
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -33,7 +33,7 @@ const useStyles = makeStyles((theme) => ({
 export default function SignIn() {
     const classes = useStyles();
     const [error, setError] = useState();
-    const { setIsTokenValid } = useAuthContext();
+    const { setTokenValid, setToken, setUserId } = useAuthContext();
 
     const submitHandler = (event) => {
         event.preventDefault();
@@ -42,7 +42,9 @@ export default function SignIn() {
 
         if (email.trim().length === 0 || password.trim().length === 0) {
             setError('Please fill required fields!');
-            setIsTokenValid(false);
+            setTokenValid(false);
+            setToken()
+            setUserId()
             return;
         } else {
             setError();
@@ -62,24 +64,30 @@ export default function SignIn() {
                 }
             };
             apiCall(requestBody)
-                .then(res => {
-                    if (res.status !== 200 && res.status !== 201) {
-                        setError('Login Failed! Incorrect credentials');
-                        setIsTokenValid(false);
-                    } else if (res.data.data.login.token) {
-                        setTokenToCookie({
-                            token: res.data.data.login.token,
-                            userId: res.data.data.login.userId,
-                            expiration: res.data.data.login.tokenExpiration
-                        });
-                        setIsTokenValid(true);
-                    }
-                })
-                .catch(err => {
-                    console.log(err);
-                    setIsTokenValid(false);
-                    setError('Login Failed! Please try again later');
-                });
+            .then(res => {
+                if (res && res.status !== 200 && res.status !== 201) {
+                    setError('Login Failed! Incorrect credentials');
+                    setTokenValid(false);
+                    setToken()
+                    setUserId()
+                } else if (res && res.data && res.data.data.login.token) {
+                    setTokenToCookie({
+                        token: res.data.data.login.token,
+                        userId: res.data.data.login.userId,
+                        expiration: res.data.data.login.tokenExpiration
+                    });
+                    setTokenValid(true);
+                    setToken(res.data.data.login.token)
+                    setUserId(res.data.data.login.userId)
+                }
+            })
+            .catch(err => {
+                console.log(err);
+                setTokenValid(false);
+                setToken()
+                setUserId()
+                setError('Login Failed! Please try again later');
+            });
         }
     }
 

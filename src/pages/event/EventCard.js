@@ -8,17 +8,23 @@ import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
+import { useAuthContext } from "../../context/AuthContext";
 
 const useStyles = makeStyles({
     root: {
         maxWidth: 345,
+        backgroundColor: '#e3f2fd',
     },
 });
 
 export default function EventCard(props) {
     const classes = useStyles();
+    const { event, handleEditEvent, handleBookEvent } = props;
+    const { userId } = useAuthContext();
+
     const [descPreview, setDescPreview] = useState([]);
-    const { title, price, description, date, creator } = props.event;
+    const { title, price, description, date, creator } = event || {};
+    const { _id: creatorId } = creator || {}
 
     useEffect(() => {
         let tempDesc = description ? description.split(' ', 10) : [];
@@ -43,19 +49,23 @@ export default function EventCard(props) {
                         </Grid>
                         <Grid container item xs={12} alignItems="center">
                             <Grid item xs={8}>
-                                <Typography variant="body2" color="textSecondary" component="p">{moment(date).format("dd, MMM Do YYYY, h:mm a")}</Typography>
+                                <Typography variant="body2" color="textSecondary"
+                                            component="p">{moment(date).format("dd, MMM Do YYYY, h:mm a")}</Typography>
                             </Grid>
                             <Grid container item xs={4} justify="flex-end">
-                                <Typography variant="body2" color="textSecondary" component="p">{`${price} £`}</Typography>
+                                <Typography variant="body2" color="textSecondary"
+                                            component="p">{`${price} £`}</Typography>
                             </Grid>
-
                         </Grid>
                     </Grid>
                 </CardContent>
             </CardActionArea>
             <CardActions>
-                <Button size="small" color="primary">Share</Button>
-                <Button size="small" color="primary">Learn More</Button>
+                {creatorId !== userId ?
+                    <Button size="small" color="primary" onClick={() => handleBookEvent(event._id)}>Book</Button>
+                    :
+                    <Button onClick={() => handleEditEvent(event)} size="small" color="primary">Edit</Button>
+                }
             </CardActions>
         </Card>
     );

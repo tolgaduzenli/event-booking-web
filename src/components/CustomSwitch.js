@@ -1,10 +1,10 @@
 import React from 'react';
 import { Route, Switch, Redirect } from 'react-router-dom';
-import Events from '../pages/Events';
-import Bookings from '../pages/Bookings';
-import AuthPage from '../pages/AuthPage';
-import Logout from '../pages/Logout';
-import useAuthContext from '../context/AuthContext';
+import Events from '../pages/event/Events';
+import Bookings from '../pages/booking/Bookings';
+import AuthPage from '../pages/auth/AuthPage';
+import Logout from '../pages/auth/Logout';
+import { useAuthContext } from '../context/AuthContext';
 
 export default function CustomSwitch() {
     const { isTokenValid } = useAuthContext();

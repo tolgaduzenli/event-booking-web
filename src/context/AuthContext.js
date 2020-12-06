@@ -1,17 +1,30 @@
 import { useState, useEffect } from 'react';
-import createUseContext from 'constate';
-import { isCookieTokenValid } from '../Utils/SessionManager';
+import constate from "constate";
+import { getTokenFromCookie, getUserIdFromCookie, isCookieTokenValid } from '../Utils/SessionManager';
 
 function useAuth() {
-    const [isTokenValid, setIsTokenValid] = useState(false);
+    const [isTokenValid, setTokenValid] = useState(false);
+    const [token, setToken] = useState();
+    const [userId, setUserId] = useState();
+
     useEffect(() => {
-        setIsTokenValid(isCookieTokenValid());
+        const tokenValid = isCookieTokenValid()
+        setTokenValid(tokenValid);
+        if (tokenValid) {
+            setToken(getTokenFromCookie());
+            setUserId(getUserIdFromCookie());
+        }
     }, []);
     return {
         isTokenValid,
-        setIsTokenValid,
+        token,
+        userId,
+        setUserId,
+        setToken,
+        setTokenValid,
     }
 }
 
-const useAuthContext = createUseContext(useAuth);
-export default useAuthContext;
+const [AuthProvider, useAuthContext] = constate(useAuth);
+useAuthContext.Provider = AuthProvider;
+export { useAuthContext };

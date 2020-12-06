@@ -2,7 +2,7 @@ import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import AppBar from './components/AppBar';
 import CustomSwitch from './components/CustomSwitch';
-import useAuthContext from './context/AuthContext';
+import { useAuthContext } from './context/AuthContext';
 
 import './App.css';
 
