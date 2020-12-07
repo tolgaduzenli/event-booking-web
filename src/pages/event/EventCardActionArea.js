@@ -15,7 +15,7 @@ export default function EventCardActionArea(props) {
     useEffect(() => {
         let tempDesc = description ? description.split(' ', 10) : [];
         if (tempDesc.length > 9) {
-            tempDesc = tempDesc.join(' ');
+            tempDesc = tempDesc.join(' ') + '...';
         } else {
             tempDesc = description;
         }

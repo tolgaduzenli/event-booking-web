@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Grid from '@material-ui/core/Grid';
 import { apiCall } from '../../Utils/ApiCalls';
 import ShareEvent from "./ShareEvent";
-import { ACTION_EDIT, ACTION_FETCH } from "../../constants/StaticTexts";
+import { ACTION_DELETE, ACTION_EDIT, ACTION_FETCH } from "../../constants/StaticTexts";
 import EventList from "./EventList";
 import CreateEventDialog from "./CreateEventDialog";
 import CustomDialog from "../../components/dialog/CustomDialog";
@@ -10,12 +10,12 @@ import { useAuthContext } from "../../context/AuthContext";
 import CustomCircularLoading from "../../components/loading/CustomCircularLoading";
 import ErrorTextDisplay from "../../components/error/ErrorTextDisplay";
 import DataNotFoundMessage from "../../components/message/DataNotFoundMessage";
-import ConfirmationDialogContent from "../../components/dialog/ConfirmationDialogContext";
 import EventDetails from "./EventDetails";
+import ConfirmationDialogContent from "../../components/dialog/ConfirmationDialogContext";
 
 export default function Events(props) {
     const { history } = props;
-    const { isTokenValid, token } = useAuthContext();
+    const { token } = useAuthContext();
 
     const [selectedEvent, setSelectedEvent] = useState();
     const [selectedAction, setSelectedAction] = useState();
@@ -26,11 +26,12 @@ export default function Events(props) {
 
     const [openCreateEventDialog, setOpenCreateEventDialog] = useState(false);
     const [openEventDetailsDialog, setOpenEventDetailsDialog] = useState(false);
+    const [openEventDeleteDialog, setOpenEventDeleteDialog] = useState(false);
 
     const loadEvents = async () => {
         setLoading(true);
         let requestBody = {
-            query: "query { events { _id title description price date creator { _id } } }"
+            query: "query { events { _id title description price date creator { _id } booked } }"
         };
         const res = await apiCall(requestBody, token);
         if (res.status !== 200 && res.status !== 201) {
@@ -40,6 +41,20 @@ export default function Events(props) {
             setError();
         }
         setLoading(false);
+    }
+
+    const deleteEvent = async () => {
+        let requestBody = {
+            query: `mutation { deleteEvent(eventId: "${selectedEvent._id}") }`
+        };
+        const res = await apiCall(requestBody, token);
+        if (res.status !== 200 && res.status !== 201) {
+            setError('Event delete failed!');
+            closeDialogHandler();
+        } else if (res.data.data.deleteEvent === 'Item deleted') {
+            closeDialogHandler(ACTION_FETCH);
+            setError();
+        }
     }
 
     async function handleViewDetails(event) {
@@ -53,12 +68,19 @@ export default function Events(props) {
         setOpenCreateEventDialog(true);
     }
 
+    const handleDeleteEvent = (selectedItem) => {
+        setSelectedAction(ACTION_DELETE);
+        setSelectedEvent(selectedItem);
+        setOpenEventDeleteDialog(true);
+    }
+
     const closeDialogHandler = async (message) => {
         if (message === ACTION_FETCH) {
             await loadEvents()
         }
         setOpenCreateEventDialog(false);
         setOpenEventDetailsDialog(false);
+        setOpenEventDeleteDialog(false);
         setSelectedAction();
         setSelectedEvent();
     }
@@ -79,7 +101,8 @@ export default function Events(props) {
             <ErrorTextDisplay text={error}/>
             {events && events.length > 0 ?
                 <Grid container item xs={12}>
-                    <EventList events={events} handleEditEvent={handleEditEvent} handleViewDetails={handleViewDetails}/>
+                    <EventList events={events} handleDeleteEvent={handleDeleteEvent} handleEditEvent={handleEditEvent}
+                               handleViewDetails={handleViewDetails}/>
                 </Grid>
                 :
                 <DataNotFoundMessage/>}
@@ -99,7 +122,17 @@ export default function Events(props) {
                 open={openEventDetailsDialog}
                 handleClose={closeDialogHandler}
             >
-                <EventDetails event={selectedEvent} closeDialog={closeDialogHandler}/>
+                <EventDetails event={selectedEvent} closeDialog={closeDialogHandler} history={history}/>
+            </CustomDialog>
+            <CustomDialog
+                modalTitle="Event Delete Confirmation"
+                open={openEventDeleteDialog}
+                handleClose={closeDialogHandler}
+            >
+                <ConfirmationDialogContent message="Do you want to delete selected event?"
+                                           handleLeftButtonClick={closeDialogHandler}
+                                           handleRightButtonClick={deleteEvent}
+                />
             </CustomDialog>
         </Grid>
     )

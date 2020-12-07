@@ -8,24 +8,31 @@ const useStyles = makeStyles((theme) => ({
     root: {
         display: 'flex',
         flexWrap: 'wrap',
+        width: '100%',
+        height: 'auto',
         justifyContent: 'space-around',
         overflow: 'hidden',
         backgroundColor: theme.palette.background.paper,
     },
     gridList: {
-        width: 500,
-        height: 450,
+        width: '100%',
+        height: 'auto',
+    },
+    gridListItem: {
+        maxWidth: 345,
+        height: 180,
     },
 }));
 export default function EventList(props) {
     const classes = useStyles();
-    const { events, handleEditEvent, handleViewDetails } = props;
+    const { events, handleEditEvent, handleViewDetails, handleDeleteEvent } = props;
     return (
         <div className={classes.root}>
-            <GridList cellHeight={180} className={classes.gridList}>
+            <GridList className={classes.gridList}>
                 {events.map((event) => (
-                    <GridListTile key={event._id}>
-                        <EventCard event={event} handleEditEvent={handleEditEvent} handleViewDetails={handleViewDetails}/>
+                    <GridListTile key={event._id} className={classes.gridListItem}>
+                        <EventCard event={event} handleDeleteEvent={handleDeleteEvent} handleEditEvent={handleEditEvent}
+                                   handleViewDetails={handleViewDetails}/>
                     </GridListTile>
                 ))}
             </GridList>

@@ -11,14 +11,15 @@ import SuccessMessage from "../../components/message/SuccessMessage";
 import ErrorTextDisplay from "../../components/error/ErrorTextDisplay";
 
 export default function EventDetails(props) {
-    const { closeDialog, event } = props;
-    const { isTokenValid, token } = useAuthContext();
+    const { closeDialog, event, history } = props;
+    const { isTokenValid, token, userId } = useAuthContext();
 
     const [title, setTitle] = useState();
     const [description, setDescription] = useState();
     const [price, setPrice] = useState(0);
     const [date, setDate] = useState();
     const [eventBookedByUser, setEventBookedByUser] = useState(false);
+    const [eventOwnerId, setEventOwnerId] = useState(false);
 
     const [openEventBookingConfirmationDialog, setOpenEventBookingConfirmationDialog] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -65,6 +66,7 @@ export default function EventDetails(props) {
             setDescription(event.description);
             setPrice(event.price);
             setDate(event.date);
+            setEventOwnerId(event.creator._id);
         }
     }, [event, isTokenValid])
 
@@ -78,11 +80,16 @@ export default function EventDetails(props) {
             <ErrorTextDisplay text={error}/>
             <Grid container item xs={12} justify="flex-end">
                 <Button size="small" variant="outlined" onClick={closeDialog}>Close</Button>
-                {!loading && !eventBookedByUser &&
+                {eventOwnerId !== userId && !loading && !eventBookedByUser && isTokenValid &&
                 <Button style={{ marginLeft: 20 }}
                         variant="outlined"
                         onClick={() => setOpenEventBookingConfirmationDialog(true)} size="small"
                         color="primary">Book</Button>}
+                {eventOwnerId !== userId && !loading && !isTokenValid &&
+                <Button style={{ marginLeft: 20, textTransform: 'none' }}
+                        variant="outlined"
+                        onClick={() => history.push('auth')} size="small"
+                        color="primary">Login for Booking</Button>}
             </Grid>
             <CustomDialog
                 modalTitle="Event Booking Confirmation"

@@ -15,7 +15,7 @@ export default function CreateEventDialog(props) {
     const { token, userId } = useAuthContext();
     const [title, setTitle] = useState();
     const [description, setDescription] = useState();
-    const [price, setPrice] = useState(0);
+    const [price, setPrice] = useState();
     const [date, setDate] = useState(new Date());
 
     const [errorMessage, setErrorMessage] = useState('');
