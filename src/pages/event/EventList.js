@@ -20,7 +20,6 @@ const useStyles = makeStyles((theme) => ({
     },
     gridListItem: {
         maxWidth: 345,
-        height: 180,
     },
 }));
 export default function EventList(props) {

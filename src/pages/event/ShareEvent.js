@@ -44,7 +44,7 @@ export default function ShareEvent(props) {
                     color="primary"
                     onClick={handleCreateEvent}
                 >
-                    Create Event
+                    {isTokenValid ? 'Create Event' : 'Login to Create Event'}
                 </Button>
             </Grid>
             <CustomDialog

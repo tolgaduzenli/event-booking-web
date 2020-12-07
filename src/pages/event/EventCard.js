@@ -9,18 +9,20 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import { useAuthContext } from "../../context/AuthContext";
-import EventCardActionArea from "./EventCardActionArea";
+import EventCardContentArea from "./EventCardContentArea";
 
 const useStyles = makeStyles({
     root: {
         maxWidth: 345,
-        height: 180,
         marginRight: 20,
         backgroundColor: '#e3f2fd',
     },
     button: {
         textTransform: 'none',
     },
+    actions: {
+        padding: 0,
+    }
 });
 
 export default function EventCard(props) {
@@ -33,8 +35,8 @@ export default function EventCard(props) {
 
     return (
         <Card className={classes.root}>
-            <EventCardActionArea event={event}/>
-            <CardActions>
+            <EventCardContentArea event={event}/>
+            <CardActions className={classes.actions}>
                 <Button className={classes.button} size="small" color="primary"
                         onClick={() => handleViewDetails(event)}>Details</Button>
                 {creatorId === userId && isTokenValid &&

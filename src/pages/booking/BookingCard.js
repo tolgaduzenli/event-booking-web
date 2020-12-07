@@ -3,7 +3,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
 import Button from '@material-ui/core/Button';
-import EventCardActionArea from "../event/EventCardActionArea";
+import EventCardContentArea from "../event/EventCardContentArea";
 
 const useStyles = makeStyles({
     root: {
@@ -19,7 +19,7 @@ export default function BookingCard(props) {
 
     return (
         <Card className={classes.root}>
-            <EventCardActionArea event={event}/>
+            <EventCardContentArea event={event}/>
             <CardActions>
                 <Button
                     size="small"
